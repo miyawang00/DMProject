@@ -8,7 +8,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
-from matplotlib import pyplot as plt
+import pickle
 
 df = pd.read_csv('flight data.csv', on_bad_lines='skip')
 # Drop duplicate values
@@ -62,3 +62,8 @@ Xtrain, Xtest, Ytrain, Ytest = train_test_split(X, Y, test_size = 0.2, random_st
 # selecting and fitting the model for training
 model = RandomForestRegressor()
 model.fit(Xtrain, Ytrain)
+
+# saving the trained mode
+pickle.dump(model, open('rf_model.pkl', 'wb'))
+# saving StandardScaler
+pickle.dump(stds, open('scaler.pkl', 'wb'))
