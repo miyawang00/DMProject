@@ -5,6 +5,9 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import plotly.express as px
+import base64
+import plotly.io as pio
+import plotly.graph_objects as go
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.model_selection import train_test_split
@@ -12,20 +15,19 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
 from matplotlib import pyplot as plt
+from PIL import Image
+import base64
+import plotly.io as pio
+
+# Set page title and icon
+st.set_page_config(page_title="Flight Price Prediction App", page_icon="✈️", layout='wide')
 
 
-# Set page config
-st.set_page_config(page_title="Flight Price Prediction App", page_icon="✈️", layout="wide")
 
-# Add custom CSS
-def set_page_bg_css(css_file_path):
-    with open(css_file_path) as f:
-        st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
-set_page_bg_css('style.css')
-
+   
 # Title
-st.title("Airline Company Analysis")
+st.title("✈️ Airline Company Analysis")
 
 
 def load_data():
@@ -46,9 +48,26 @@ def load_data():
 
 df = load_data()
 
+with st.expander("About this app ℹ️ "):
+
+    st.write("")
+
+    st.markdown(
+        """
+    Introducing our innovative solution to help travelers find the most suitable flights based on their origin and destination. Our app uses advanced machine learning algorithms to provide personalized flight recommendations, taking into account factors such as cost, flexibility, and tolerance for delays. Say goodbye to the overwhelming and time-consuming process of searching for flights, and let our app simplify your travel experience. With our user-friendly interface and personalized recommendations, you can trust that you're getting the best flight options for your unique travel needs. Try it now and make your next trip stress-free.
+
+    """
+    )
+
+    st.write("")
+
 
 with st.expander("Show the 'Flights' dataframe ✈️"):
     st.write(df)
+
+
+
+
 
 # CO2 / Price Analysis
 
@@ -84,6 +103,7 @@ try:
                      labels = {"airline_name" : "Airline Company", "co2" : "Average CO2 Emissions (KG) Above The Standard Emissions"},
                      title = "Airline Companies With The Highest Average CO2 Emissions Above The Standard Emissions")
 
+                
         st.plotly_chart(fig)
 
     elif MetricSlider01 == 'price_by_duration':
@@ -126,6 +146,18 @@ except IndexError:
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 st.title("Flight Search & Price Prediction")
 
 KNN = jl.load('KNN.joblib')
@@ -157,19 +189,19 @@ col1, col2 = st.columns(2)
 
 from_country_list = sorted(df['from_country'].drop_duplicates().tolist())
 
-from_country_choice = col1.selectbox("Enter your from country", from_country_list)
+from_country_choice = col1.selectbox("Enter your from country  \U0001F30E ", from_country_list)
 
 transaction_df = df[df['from_country'] == from_country_choice]
 dest_country_list = sorted(transaction_df['dest_country'].drop_duplicates().tolist())
-dest_country_choice = col2.selectbox("Enter your destination country", dest_country_list)
+dest_country_choice = col2.selectbox("Enter your destination country  \U0001F30E ", dest_country_list)
 
 transaction_df = transaction_df[transaction_df['dest_country'] == dest_country_choice]
 departure_month_list = sorted(transaction_df['departure_month'].drop_duplicates().tolist())
-departure_month_choice = col1.selectbox("Enter your departure month", departure_month_list)
+departure_month_choice = col1.selectbox("Enter your departure month \U0001F4C5 ", departure_month_list)
 
 transaction_df = transaction_df[transaction_df['departure_month'] == departure_month_choice]
 stop_list = sorted(transaction_df['stops'].drop_duplicates().tolist())
-stop_choice = col2.selectbox("Enter you stops choice", stop_list)
+stop_choice = col2.selectbox("Enter you stops choice  \U0001F6D1 ", stop_list)
 
 transaction_df = transaction_df[transaction_df['stops'] == stop_choice]
 airline_name_list = sorted(transaction_df['airline_name'].drop_duplicates().tolist())
@@ -178,6 +210,7 @@ airline_name_choice = st.selectbox("Enter your Airline Company Choice", airline_
 transaction_df = transaction_df[transaction_df['airline_name'] == airline_name_choice]
 
 # Initializing input values
+
 input_values = []
 input_columns = ['from_country','dest_country','airline_name','duration','stops','co2_emissions','departure_month']
 
@@ -215,5 +248,3 @@ if st.button("Predict Price & Search The Possible Flights 💛"):
     prediction = KNN.predict(input_variables)
     st.write("Your recommended flights are: ", transaction_df["flight_number"].drop_duplicates())
     st.write(f"Predicted Price: $ {prediction[0]}")
-
-    
